@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes - Dark Hack Simulator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0b0c0d;
+            color: #e4e4e4;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: #36ff6b;
+            margin-bottom: 2rem;
+        }
+        
+        .test-container {
+            background-color: #1a1b1e;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #333;
+        }
+        
+        .test-title {
+            color: #36ff6b;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .test-result {
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .pass {
+            background-color: rgba(54, 255, 107, 0.2);
+            color: #36ff6b;
+            border: 1px solid #36ff6b;
+        }
+        
+        .fail {
+            background-color: rgba(255, 54, 54, 0.2);
+            color: #ff3636;
+            border: 1px solid #ff3636;
+        }
+        
+        button {
+            background-color: #36ff6b;
+            color: #0b0c0d;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        .run-all {
+            background-color: #ffcc36;
+            color: #0b0c0d;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Testes - Dark Hack Simulator</h1>
+    
+    <button class="run-all" onclick="runAllTests()">Executar Todos os Testes</button>
+    
+    <div id="test-results">
+        <!-- Resultados dos testes serão exibidos aqui -->
+    </div>
+
+    <script>
+        // Dados de teste baseados nos desafios
+        const testChallenges = [
+            {
+                id: "find_password",
+                solution: "DARKHACK2024",
+                testCases: [
+                    { input: "DARKHACK2024", expected: true },
+                    { input: "darkhack2024", expected: true }, // case insensitive
+                    { input: "DARKHACK2024 ", expected: true }, // espaços extras
+                    { input: "wrongpassword", expected: false },
+                    { input: "", expected: false }
+                ]
+            },
+            {
+                id: "decode_message", 
+                solution: "desenvolvedor de computador a teste de cifra mensagem",
+                testCases: [
+                    { input: "desenvolvedor de computador a teste de cifra mensagem", expected: true },
+                    { input: "Desenvolvedor de Computador a Teste de Cifra Mensagem", expected: true },
+                    { input: "mensagem cifrada", expected: false },
+                    { input: "teste", expected: false }
+                ]
+            },
+            {
+                id: "log_analysis",
+                solution: "192.168.1.15", 
+                testCases: [
+                    { input: "192.168.1.15", expected: true },
+                    { input: "192.168.1.10", expected: false },
+                    { input: "192.168.1.20", expected: false }
+                ]
+            },
+            {
+                id: "broken_config",
+                solution: "server.port=8080 security.ssl=true database.host=localhost database.port=5432 cache.enabled=true log.level=INFO",
+                testCases: [
+                    { input: "server.port=8080 security.ssl=true database.host=localhost database.port=5432 cache.enabled=true log.level=INFO", expected: true },
+                    { input: "security.ssl=true server.port=8080 database.host=localhost database.port=5432 cache.enabled=true log.level=INFO", expected: false },
+                    { input: "wrong order", expected: false }
+                ]
+            },
+            {
+                id: "javascript_puzzle",
+                solution: "PRIME_29",
+                testCases: [
+                    { input: "PRIME_29", expected: true },
+                    { input: "prime_29", expected: true },
+                    { input: "PRIME_23", expected: false },
+                    { input: "29", expected: false }
+                ]
+            },
+            {
+                id: "network_scan", 
+                solution: "192.168.1.4",
+                testCases: [
+                    { input: "192.168.1.4", expected: true },
+                    { input: "192.168.1.2", expected: false },
+                    { input: "192.168.1.5", expected: false }
+                ]
+            }
+        ];
+
+        // Função para validar soluções (igual à do app principal)
+        function validateSolution(challengeId, answer) {
+            const challenge = testChallenges.find(c => c.id === challengeId);
+            if (!challenge) return false;
+            
+            const normalizedAnswer = answer.trim().toLowerCase();
+            const normalizedSolution = challenge.solution.trim().toLowerCase();
+            
+            return normalizedAnswer === normalizedSolution;
+        }
+
+        // Executa testes para um desafio específico
+        function runTestsForChallenge(challengeId) {
+            const challenge = testChallenges.find(c => c.id === challengeId);
+            if (!challenge) return;
+            
+            const resultsContainer = document.getElementById('test-results');
+            const testElement = document.createElement('div');
+            testElement.className = 'test-container';
+            testElement.innerHTML = `<div class="test-title">Testando: ${challengeId}</div>`;
+            
+            challenge.testCases.forEach((testCase, index) => {
+                const result = validateSolution(challengeId, testCase.input);
+                const passed = result === testCase.expected;
+                
+                const testCaseElement = document.createElement('div');
+                testCaseElement.innerHTML = `
+                    <div>Teste ${index + 1}: "${testCase.input}" → Esperado: ${testCase.expected}</div>
+                    <div class="test-result ${passed ? 'pass' : 'fail'}">
+                        ${passed ? '✅ PASSOU' : '❌ FALHOU'} - Resultado: ${result}
+                    </div>
+                `;
+                testElement.appendChild(testCaseElement);
+            });
+            
+            resultsContainer.appendChild(testElement);
+        }
+
+        // Executa todos os testes
+        function runAllTests() {
+            document.getElementById('test-results').innerHTML = '';
+            testChallenges.forEach(challenge => {
+                runTestsForChallenge(challenge.id);
+            });
+        }
+
+        // Executa testes individuais para cada desafio
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cria botões para testes individuais
+            const resultsContainer = document.getElementById('test-results');
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.marginBottom = '2rem';
+            
+            testChallenges.forEach(challenge => {
+                const button = document.createElement('button');
+                button.textContent = `Testar ${challenge.id}`;
+                button.onclick = () => {
+                    document.getElementById('test-results').innerHTML = '';
+                    runTestsForChallenge(challenge.id);
+                };
+                buttonContainer.appendChild(button);
+            });
+            
+            resultsContainer.parentNode.insertBefore(buttonContainer, resultsContainer);
+        });
+    </script>
+</body>
+</html>
