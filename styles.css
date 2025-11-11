@@ -289,6 +289,106 @@ body {
     overflow: hidden;
 }
 
+/* Animações do Terminal */
+.terminal-loading {
+    color: var(--accent);
+    font-style: italic;
+}
+
+.terminal-scanning {
+    color: var(--warning);
+    animation: pulse 1.5s infinite;
+}
+
+.terminal-accessing {
+    color: var(--success);
+    animation: blink 0.8s infinite;
+}
+
+.terminal-decrypting {
+    color: var(--accent);
+    animation: typewriter 2s steps(40, end);
+}
+
+.terminal-connecting {
+    color: var(--warning);
+    animation: connecting 2s infinite;
+}
+
+/* Animações para decodificação */
+.terminal-decoding {
+    color: var(--accent);
+    animation: pulse 1s infinite;
+}
+
+.terminal-converting {
+    color: var(--warning);
+    animation: blink 0.6s infinite;
+}
+
+@keyframes matrix {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.matrix-effect {
+    background: linear-gradient(45deg, #000 25%, #36ff6b 25%, #36ff6b 50%, #000 50%, #000 75%, #36ff6b 75%);
+    background-size: 10px 10px;
+    animation: matrix 0.5s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes connecting {
+    0% { content: "Conectando."; }
+    33% { content: "Conectando.."; }
+    66% { content: "Conectando..."; }
+    100% { content: "Conectando."; }
+}
+
+@keyframes scanning {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.scan-bar {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scanning 2s linear infinite;
+    margin: 0.5rem 0;
+}
+
+/* Efeito de digitação */
+.typing-effect {
+    overflow: hidden;
+    border-right: 2px solid var(--accent);
+    white-space: nowrap;
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--accent); }
+}
+
 .output {
     flex: 1;
     overflow-y: auto;
