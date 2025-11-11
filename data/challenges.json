@@ -78,7 +78,7 @@
               "codificada.txt": {
                 "name": "codificada.txt",
                 "type": "file",
-                "content": "surjudpdgru gh frpsxwdgruhv"
+                "content": "surjudpdgrughfrpsxwdgruhv"
               },
               "instrucoes.txt": {
                 "name": "instrucoes.txt",
@@ -95,7 +95,7 @@
         "A mensagem decodificada deve fazer sentido em português"
       ],
       "solution": "programador de computadores",
-      "solution_explain": "A mensagem 'surjudpdgru gh frpsxwdgruhv' decodificada com deslocamento -3 resulta em 'programador de computadores'"
+      "solution_explain": "A mensagem 'surjudpdgrughfrpsxwdgruhv' decodificada com deslocamento -3 resulta em 'programador de computadores'"
     },
     {
       "id": "log_analysis",
@@ -342,7 +342,7 @@
               "mensagem_cripto.txt": {
                 "name": "mensagem_cripto.txt",
                 "type": "file",
-                "content": "SDUDEHQV YRFH TXHEURX D FULSWRJUDILD"
+                "content": "SDUDEHQVYRFHTXHEURXDFULSWRJUDILD"
               },
               "algoritmo.js": {
                 "name": "algoritmo.js",
@@ -361,10 +361,10 @@
       "hints": [
         "É uma cifra de substituição simples",
         "Teste chaves de 1 a 5 no algoritmo de decrypt",
-        "Use console.log(decrypt('SDUDEHQV YRFH TXHEURX D FULSWRJUDILD', chave))"
+        "Use console.log(decrypt('SDUDEHQVYRFHTXHEURXDFULSWRJUDILD', chave))"
       ],
       "solution": "PARABENS VOCE QUEBROU A CRIPTOGRAFIA",
-      "solution_explain": "Usando decrypt com chave 3, a mensagem 'SDUDEHQV YRFH TXHEURX D FULSWRJUDILD' se torna 'PARABENS VOCE QUEBROU A CRIPTOGRAFIA'."
+      "solution_explain": "Usando decrypt com chave 3, a mensagem 'SDUDEHQVYRFHTXHEURXDFULSWRJUDILD' se torna 'PARABENS VOCE QUEBROU A CRIPTOGRAFIA'."
     },
     {
       "id": "network_packet_analysis",
