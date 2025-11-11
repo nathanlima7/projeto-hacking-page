@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Hack Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Dark Hack Simulator</h1>
+            <div class="user-info">
+                <span id="username">hacker@darknet:~$</span>
+                <button id="reset-progress" class="btn-danger">Reset Progresso</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <aside class="challenges-panel">
+                <h2>Desafios</h2>
+                <div class="filter-controls">
+                    <select id="level-filter">
+                        <option value="all">Todos os níveis</option>
+                        <option value="easy">Fácil</option>
+                        <option value="medium">Médio</option>
+                        <option value="hard">Difícil</option>
+                    </select>
+                    <input type="text" id="search-challenges" placeholder="Buscar desafios...">
+                </div>
+                <div id="challenges-list" class="challenges-list">
+                    <!-- Lista de desafios será carregada aqui -->
+                </div>
+            </aside>
+
+            <section class="terminal-container">
+                <div class="terminal-header">
+                    <h3>Terminal Interativo</h3>
+                    <div class="terminal-controls">
+                        <button id="clear-terminal" class="btn-secondary">Limpar</button>
+                        <button id="toggle-sandbox" class="btn-secondary">Sandbox JS</button>
+                    </div>
+                </div>
+                <div id="terminal" class="terminal">
+                    <div class="output">
+                        <div class="command-line">
+                            <span class="prompt">hacker@darknet:~$</span>
+                            <span class="welcome-message">Bem-vindo ao Dark Hack Simulator. Use 'help' para ver comandos
+                                disponíveis.</span>
+                        </div>
+                    </div>
+                    <div class="input-line">
+                        <span class="prompt">hacker@darknet:~$</span>
+                        <input type="text" id="command-input" autocomplete="off" autofocus>
+                    </div>
+                </div>
+
+                <!-- Sandbox JS (inicialmente oculto) -->
+                <div id="js-sandbox" class="js-sandbox hidden">
+                    <div class="sandbox-header">
+                        <h4>JavaScript Sandbox</h4>
+                        <button id="run-sandbox" class="btn-primary">Executar</button>
+                    </div>
+                    <textarea id="sandbox-code" placeholder="Digite seu código JavaScript aqui..."></textarea>
+                </div>
+
+                <!-- Interface para arquivos quebrados (inicialmente oculto) -->
+                <div id="broken-file-editor" class="broken-file-editor hidden">
+                    <div class="editor-header">
+                        <h4>Reparar Arquivo: <span id="broken-file-name"></span></h4>
+                        <button id="close-editor" class="btn-secondary">Fechar</button>
+                    </div>
+                    <div id="fragments-container" class="fragments-container">
+                        <!-- Fragmentos serão carregados aqui -->
+                    </div>
+                    <div class="editor-controls">
+                        <button id="check-solution" class="btn-primary">Verificar Solução</button>
+                        <button id="reset-fragments" class="btn-secondary">Reiniciar</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="data/challenges.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

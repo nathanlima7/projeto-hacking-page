@@ -1,0 +1,474 @@
+{
+  "challenges": [
+    {
+      "id": "find_password",
+      "title": "Encontre a Senha Escondida",
+      "level": "easy",
+      "description": "Explore o sistema de arquivos para encontrar a senha escondida em um dos arquivos.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "documentos": {
+            "name": "documentos",
+            "type": "directory",
+            "children": {
+              "leia-me.txt": {
+                "name": "leia-me.txt",
+                "type": "file",
+                "content": "Bem-vindo ao sistema. Verifique a pasta config para configurações importantes."
+              },
+              "notas.txt": {
+                "name": "notas.txt",
+                "type": "file",
+                "content": "Reunião às 15h com a equipe de segurança.\nNão se esqueça de fazer backup dos logs."
+              }
+            }
+          },
+          "config": {
+            "name": "config",
+            "type": "directory",
+            "children": {
+              "sistema.conf": {
+                "name": "sistema.conf",
+                "type": "file",
+                "content": "hostname: darknet-server\nport: 8080\ntimeout: 30"
+              },
+              "seguranca.txt": {
+                "name": "seguranca.txt",
+                "type": "file",
+                "content": "A senha de administrador é: DARKHACK2024\nMantenha esta informação em segredo."
+              }
+            }
+          },
+          "logs": {
+            "name": "logs",
+            "type": "directory",
+            "children": {
+              "acesso.log": {
+                "name": "acesso.log",
+                "type": "file",
+                "content": "2024-01-15 10:30:22 - Usuário anônimo conectado\n2024-01-15 10:35:47 - Tentativa de acesso falhou\n2024-01-15 11:02:15 - Backup realizado com sucesso"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Use o comando 'ls' para listar os diretórios disponíveis",
+        "Procure em diretórios que possam conter informações de configuração",
+        "O arquivo 'seguranca.txt' pode ter a informação que você precisa"
+      ],
+      "solution": "DARKHACK2024",
+      "solution_explain": "A senha estava escondida no arquivo seguranca.txt dentro do diretório config."
+    },
+    {
+      "id": "decode_message",
+      "title": "Decodifique a Mensagem Secreta",
+      "level": "easy",
+      "description": "Uma mensagem codificada foi encontrada. Decifre-a usando a cifra de César com deslocamento 3.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "mensagens": {
+            "name": "mensagens",
+            "type": "directory",
+            "children": {
+              "codificada.txt": {
+                "name": "codificada.txt",
+                "type": "file",
+                "content": "surjudpdgru gh frpsxwdgruhv"
+              },
+              "instrucoes.txt": {
+                "name": "instrucoes.txt",
+                "type": "file",
+                "content": "Use a cifra de César com deslocamento 3 para decodificar a mensagem.\nLembre-se: A->D, B->E, C->F, etc."
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "A cifra de César desloca cada letra por um número fixo de posições no alfabeto",
+        "Para decodificar, você precisa fazer o processo inverso",
+        "A mensagem decodificada deve fazer sentido em português"
+      ],
+      "solution": "programador de computadores",
+      "solution_explain": "A mensagem 'surjudpdgru gh frpsxwdgruhv' decodificada com deslocamento -3 resulta em 'programador de computadores'"
+    },
+    {
+      "id": "log_analysis",
+      "title": "Análise de Logs de Segurança",
+      "level": "medium",
+      "description": "Analise os logs do sistema para identificar padrões suspeitos de atividade.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "var": {
+            "name": "var",
+            "type": "directory",
+            "children": {
+              "log": {
+                "name": "log",
+                "type": "directory",
+                "children": {
+                  "auth.log": {
+                    "name": "auth.log",
+                    "type": "file",
+                    "content": "Jan 15 08:30:22 server sshd[1234]: Accepted password for user1 from 192.168.1.10\nJan 15 08:45:18 server sshd[1235]: Failed password for root from 192.168.1.15\nJan 15 08:45:19 server sshd[1236]: Failed password for root from 192.168.1.15\nJan 15 08:45:20 server sshd[1237]: Failed password for root from 192.168.1.15\nJan 15 08:45:21 server sshd[1238]: Failed password for root from 192.168.1.15\nJan 15 09:10:33 server sshd[1239]: Accepted password for admin from 192.168.1.20\nJan 15 10:22:47 server sshd[1240]: Connection closed by 192.168.1.25\nJan 15 11:05:12 server sshd[1241]: Accepted password for user2 from 192.168.1.30"
+                  },
+                  "system.log": {
+                    "name": "system.log",
+                    "type": "file",
+                    "content": "Jan 15 08:00:01 server systemd: Starting Daily Cleanup\nJan 15 08:00:02 server systemd: Started Daily Cleanup\nJan 15 08:45:25 server systemd: Starting Firewall Rule Update\nJan 15 08:45:26 server systemd: Started Firewall Rule Update\nJan 15 12:00:01 server systemd: Starting System Backup\nJan 15 12:00:02 server systemd: Started System Backup"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Procure por múltiplas tentativas falhas de login em sequência",
+        "Preste atenção aos endereços IP e usuários envolvidos",
+        "Um ataque de força bruta geralmente mostra várias tentativas em curto período"
+      ],
+      "solution": "192.168.1.15",
+      "solution_explain": "O IP 192.168.1.15 tentou fazer login como root 4 vezes em sequência com senha incorreta, indicando um possível ataque de força bruta."
+    },
+    {
+      "id": "broken_config",
+      "title": "Repare o Arquivo de Configuração",
+      "level": "medium",
+      "description": "O arquivo de configuração do servidor foi corrompido. Reordene os fragmentos para restaurá-lo.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "etc": {
+            "name": "etc",
+            "type": "directory",
+            "children": {
+              "server.conf": {
+                "name": "server.conf",
+                "type": "file",
+                "content": "database.host=localhost\ndatabase.port=5432\nserver.port=8080\ncache.enabled=true\nlog.level=INFO\nsecurity.ssl=true",
+                "broken": true,
+                "originalContent": "server.port=8080\nsecurity.ssl=true\ndatabase.host=localhost\ndatabase.port=5432\ncache.enabled=true\nlog.level=INFO"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Procure por uma ordem lógica nas configurações",
+        "Configurações relacionadas ao servidor geralmente vêm primeiro",
+        "Configurações de banco de dados geralmente seguem as do servidor"
+      ],
+      "solution": "server.port=8080 security.ssl=true database.host=localhost database.port=5432 cache.enabled=true log.level=INFO",
+      "solution_explain": "A ordem correta do arquivo de configuração começa com as configurações do servidor, seguido por segurança, banco de dados, cache e logs."
+    },
+    {
+      "id": "javascript_puzzle",
+      "title": "Quebra-cabeça JavaScript",
+      "level": "medium",
+      "description": "Resolva o problema de programação para obter a flag secreta.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "code": {
+            "name": "code",
+            "type": "directory",
+            "children": {
+              "puzzle.js": {
+                "name": "puzzle.js",
+                "type": "file",
+                "content": "// Encontre o número que falta na sequência:\n// 2, 3, 5, 7, 11, 13, 17, 19, 23, ?\n// Este é uma sequência de números primos.\n// O próximo número primo após 23 é 29.\n// A flag é: PRIME_29"
+              },
+              "desafio.txt": {
+                "name": "desafio.txt",
+                "type": "file",
+                "content": "Escreva uma função JavaScript que encontre o próximo número primo após 23.\nUse o sandbox JS para testar seu código.\nA flag segue o formato: PRIME_<numero>"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Esta é uma sequência de números primos",
+        "Um número primo é divisível apenas por 1 e por ele mesmo",
+        "O próximo número primo após 23 é 29"
+      ],
+      "solution": "PRIME_29",
+      "solution_explain": "A sequência apresentada é de números primos: 2, 3, 5, 7, 11, 13, 17, 19, 23. O próximo número primo é 29, portanto a flag é PRIME_29."
+    },
+    {
+      "id": "network_scan",
+      "title": "Varredura de Rede",
+      "level": "hard",
+      "description": "Analise os resultados de uma varredura de rede para encontrar o servidor vulnerável.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "scan": {
+            "name": "scan",
+            "type": "directory",
+            "children": {
+              "results.txt": {
+                "name": "results.txt",
+                "type": "file",
+                "content": "IP: 192.168.1.1 - Portas abertas: 22, 80, 443 - Serviços: SSH, HTTP, HTTPS\nIP: 192.168.1.2 - Portas abertas: 22, 21, 23 - Serviços: SSH, FTP, Telnet\nIP: 192.168.1.3 - Portas abertas: 22, 80, 8080, 3389 - Serviços: SSH, HTTP, HTTP-Alt, RDP\nIP: 192.168.1.4 - Portas abertas: 22, 80, 139, 445 - Serviços: SSH, HTTP, NetBIOS, SMB\nIP: 192.168.1.5 - Portas abertas: 22, 80, 443, 1433 - Serviços: SSH, HTTP, HTTPS, MSSQL"
+              },
+              "vulnerabilidades.txt": {
+                "name": "vulnerabilidades.txt",
+                "type": "file",
+                "content": "Serviços conhecidos por vulnerabilidades:\n- Telnet (porta 23): Comunicação não criptografada\n- FTP (porta 21): Senhas em texto claro\n- SMB (porta 445): Vulnerável a ataques como EternalBlue\n- MSSQL (porta 1433): Alvo comum para injeção SQL"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Procure por serviços com vulnerabilidades conhecidas",
+        "Telnet e FTP são considerados inseguros",
+        "SMB na porta 445 tem vulnerabilidades críticas conhecidas"
+      ],
+      "solution": "192.168.1.4",
+      "solution_explain": "O IP 192.168.1.4 tem a porta 445 (SMB) aberta, que é conhecida por vulnerabilidades críticas como EternalBlue, tornando-o o alvo mais vulnerável."
+    },
+    {
+      "id": "auth_bruteforce",
+      "title": "Quebra de Autenticação",
+      "level": "medium",
+      "description": "Um sistema de autenticação simples foi encontrado. Use a wordlist para encontrar a senha correta.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "sistema": {
+            "name": "sistema",
+            "type": "directory",
+            "children": {
+              "auth_system.js": {
+                "name": "auth_system.js",
+                "type": "file",
+                "content": "// Sistema de autenticação simples\nfunction authenticate(password) {\n    const correctPassword = 'quantum2024';\n    return password === correctPassword;\n}\n\n// Teste: authenticate('sua_tentativa')"
+              },
+              "wordlist.txt": {
+                "name": "wordlist.txt",
+                "type": "file",
+                "content": "admin\npassword\n123456\nquantum\nhacker\nsecurity\nquantum2024\nadmin123\np@ssw0rd\nletmein"
+              },
+              "instrucoes.txt": {
+                "name": "instrucoes.txt",
+                "type": "file",
+                "content": "Analise o código em auth_system.js para entender a autenticação.\nUse a wordlist.txt para testar possíveis senhas.\nA senha correta está na wordlist."
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "A senha correta está na wordlist.txt",
+        "Use o sandbox JS para testar a função authenticate()",
+        "A senha é 'quantum2024'"
+      ],
+      "solution": "quantum2024",
+      "solution_explain": "A senha 'quantum2024' estava na wordlist e é a correta no sistema de autenticação."
+    },
+    {
+      "id": "web_api_exploit",
+      "title": "Exploração de API Web",
+      "level": "hard",
+      "description": "Uma API REST vulnerável foi descoberta. Explore os endpoints para encontrar informações sensíveis.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "api_docs": {
+            "name": "api_docs",
+            "type": "directory",
+            "children": {
+              "endpoints.txt": {
+                "name": "endpoints.txt",
+                "type": "file",
+                "content": "API Endpoints:\n\nGET  /api/users     - Lista usuários (requer auth)\nGET  /api/users/:id - Detalhes do usuário\nPOST /api/login    - Autenticação\nGET  /api/config   - Configurações do sistema\nGET  /api/backup   - Backup de dados (admin only)"
+              },
+              "log_acesso.txt": {
+                "name": "log_acesso.txt",
+                "type": "file",
+                "content": "2024-01-15 10:30:22 - GET /api/users/1 - 200 OK\n2024-01-15 10:31:05 - GET /api/users/5 - 404 Not Found\n2024-01-15 10:32:17 - GET /api/config - 403 Forbidden\n2024-01-15 10:33:42 - POST /api/login - 200 OK\n2024-01-15 10:34:15 - GET /api/backup - 401 Unauthorized"
+              }
+            }
+          },
+          "scripts": {
+            "name": "scripts",
+            "type": "directory",
+            "children": {
+              "api_test.js": {
+                "name": "api_test.js",
+                "type": "file",
+                "content": "// Simulador de chamadas API\nclass APISimulator {\n    static users = {\n        1: { id: 1, name: 'admin', role: 'admin', secret: 'FLAG_API_MASTER' },\n        2: { id: 2, name: 'user1', role: 'user' },\n        3: { id: 3, name: 'guest', role: 'guest' }\n    };\n    \n    static getUser(id) {\n        return this.users[id] || null;\n    }\n}\n\n// Teste: APISimulator.getUser(1)"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "O usuário admin tem ID 1",
+        "Use o sandbox JS para explorar a API simulada",
+        "A flag está no campo 'secret' do usuário admin"
+      ],
+      "solution": "FLAG_API_MASTER",
+      "solution_explain": "Explorando o endpoint /api/users/1 através do simulador, encontramos a flag no campo 'secret' do usuário admin."
+    },
+    {
+      "id": "crypto_challenge",
+      "title": "Desafio Criptográfico",
+      "level": "hard",
+      "description": "Uma mensagem foi criptografada com um algoritmo customizado. Decifre-a.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "crypto": {
+            "name": "crypto",
+            "type": "directory",
+            "children": {
+              "mensagem_cripto.txt": {
+                "name": "mensagem_cripto.txt",
+                "type": "file",
+                "content": "SDUDEHQV YRFH TXHEURX D FULSWRJUDILD"
+              },
+              "algoritmo.js": {
+                "name": "algoritmo.js",
+                "type": "file",
+                "content": "function encrypt(text, key) {\n    return text.split('').map(char => {\n        if (char >= 'A' && char <= 'Z') {\n            return String.fromCharCode(((char.charCodeAt(0) - 65 + key) % 26) + 65);\n        }\n        return char;\n    }).join('');\n}\n\nfunction decrypt(text, key) {\n    return encrypt(text, 26 - key); // Inverso da cifra de César\n}\n\n// A chave é um número entre 1-25\n// Teste: decrypt('KROD', 3)"
+              },
+              "dica.txt": {
+                "name": "dica.txt",
+                "type": "file",
+                "content": "O algoritmo é uma variação da cifra de César.\nA chave é um número pequeno (1-5).\nA mensagem decifrada faz sentido em português."
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "É uma cifra de substituição simples",
+        "Teste chaves de 1 a 5 no algoritmo de decrypt",
+        "Use console.log(decrypt('SDUDEHQV YRFH TXHEURX D FULSWRJUDILD', chave))"
+      ],
+      "solution": "PARABENS VOCE QUEBROU A CRIPTOGRAFIA",
+      "solution_explain": "Usando decrypt com chave 3, a mensagem 'SDUDEHQV YRFH TXHEURX D FULSWRJUDILD' se torna 'PARABENS VOCE QUEBROU A CRIPTOGRAFIA'."
+    },
+    {
+      "id": "network_packet_analysis",
+      "title": "Análise de Pacotes de Rede",
+      "level": "hard",
+      "description": "Capture e analise pacotes de rede para encontrar informações sensíveis.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "captures": {
+            "name": "captures",
+            "type": "directory",
+            "children": {
+              "packet_dump.txt": {
+                "name": "packet_dump.txt",
+                "type": "file",
+                "content": "TIMESTAMP: 2024-01-15 14:30:22\nSRC: 192.168.1.100:54321 → DST: 192.168.1.50:80\nDATA: GET /login.php?user=admin&password=temp123 HTTP/1.1\n\nTIMESTAMP: 2024-01-15 14:30:25  \nSRC: 192.168.1.50:80 → DST: 192.168.1.100:54321\nDATA: HTTP/1.1 401 Unauthorized\n\nTIMESTAMP: 2024-01-15 14:30:30\nSRC: 192.168.1.100:54321 → DST: 192.168.1.50:80\nDATA: POST /api/auth Content-Type: application/json\nDATA: {\"username\":\"admin\",\"password\":\"S3cr3tFl4g!2024\"}\n\nTIMESTAMP: 2024-01-15 14:30:32\nSRC: 192.168.1.50:80 → DST: 192.168.1.100:54321\nDATA: HTTP/1.1 200 OK\nDATA: {\"token\":\"abc123\",\"role\":\"admin\"}"
+              },
+              "analysis_tool.js": {
+                "name": "analysis_tool.js",
+                "type": "file",
+                "content": "// Ferramenta de análise de pacotes\nfunction extractPasswords(packetData) {\n    const passwords = [];\n    const lines = packetData.split('\\n');\n    \n    lines.forEach(line => {\n        // Procura por padrões de senha\n        if (line.includes('password=')) {\n            const match = line.match(/password=([^&\\s]+)/);\n            if (match) passwords.push(match[1]);\n        }\n        if (line.includes('\"password\":')) {\n            const match = line.match(/\"password\":\"([^\"]+)\"/);\n            if (match) passwords.push(match[1]);\n        }\n    });\n    \n    return passwords;\n}\n\n// Teste: extractPasswords(conteúdo_do_arquivo)"
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Use a ferramenta de análise para extrair senhas dos pacotes",
+        "Procure por tráfego HTTP com dados de autenticação",
+        "A flag é uma senha que foi transmitida em texto claro"
+      ],
+      "solution": "S3cr3tFl4g!2024",
+      "solution_explain": "Analisando o dump de pacotes, encontramos a senha 'S3cr3tFl4g!2024' sendo transmitida em texto claro via POST para /api/auth."
+    },
+    {
+      "id": "network_interception",
+      "title": "Interceptação de Tráfego de Rede",
+      "level": "hard",
+      "description": "Intercepte o tráfego da rede, encontre uma máquina vulnerável e recupere dados sensíveis.",
+      "filesystem": {
+        "name": "~",
+        "type": "directory",
+        "children": {
+          "tools": {
+            "name": "tools",
+            "type": "directory",
+            "children": {
+              "network_scanner.js": {
+                "name": "network_scanner.js",
+                "type": "file",
+                "content": "// Scanner de rede - encontra hosts ativos\nfunction scanNetwork() {\n    return {\n        '192.168.1.1': 'Gateway/Router',\n        '192.168.1.50': 'Servidor Web',\n        '192.168.1.100': 'Workstation - User: john_doe',\n        '192.168.1.150': 'File Server - Vulnerável',\n        '192.168.1.200': 'Database Server'\n    };\n}\n\n// Teste: scanNetwork()"
+              },
+              "packet_sniffer.js": {
+                "name": "packet_sniffer.js",
+                "type": "file",
+                "content": "// Sniffer de pacotes - intercepta tráfego\nfunction sniffPackets(targetIP) {\n    const traffic = {\n        '192.168.1.150': [\n            'FTP Login: user=admin password=Server@1234',\n            'HTTP: GET /confidential/data.zip',\n            'Email: user@company.com -> banking credentials',\n            'SSH: Connection established port 22'\n        ]\n    };\n    return traffic[targetIP] || ['Nenhum tráfego encontrado para: ' + targetIP];\n}\n\n// Teste: sniffPackets('192.168.1.150')"
+              },
+              "ssh_bruteforce.js": {
+                "name": "ssh_bruteforce.js",
+                "type": "file",
+                "content": "// Simulador de brute force SSH\nfunction sshBruteForce(ip, username, wordlist) {\n    const validCredentials = {\n        'admin': 'Server@1234',\n        'root': 'Admin@2024',\n        'john_doe': 'Password123'\n    };\n    \n    if (validCredentials[username] && wordlist.includes(validCredentials[username])) {\n        return `✅ SSH Access Granted to ${ip} as ${username}`;\n    }\n    return `❌ Access Denied to ${ip}`;\n}\n\n// Teste: sshBruteForce('192.168.1.150', 'admin', ['Server@1234'])"
+              }
+            }
+          },
+          "captures": {
+            "name": "captures",
+            "type": "directory",
+            "children": {
+              "network_scan.txt": {
+                "name": "network_scan.txt",
+                "type": "file",
+                "content": "Iniciando varredura de rede...\nUse o comando: scan para executar o scanner"
+              },
+              "intercepted_traffic.txt": {
+                "name": "intercepted_traffic.txt",
+                "type": "file",
+                "content": "Aguardando interceptação...\nUse o comando: sniff <IP> para capturar tráfego"
+              }
+            }
+          },
+          "exploit": {
+            "name": "exploit",
+            "type": "directory",
+            "children": {
+              "access_log.txt": {
+                "name": "access_log.txt",
+                "type": "file",
+                "content": "Sistema de exploração pronto.\nUse credenciais obtidas para acessar sistemas."
+              }
+            }
+          }
+        }
+      },
+      "hints": [
+        "Comece escaneando a rede para encontrar hosts",
+        "Intercepte o tráfego do host vulnerável",
+        "Use as credenciais FTP encontradas para acessar o servidor",
+        "Procure por arquivos com dados sensíveis no servidor",
+        "A flag está em um arquivo chamado 'red_flag.txt'"
+      ],
+      "solution": "RED_FLAG_NETWORK_MASTER_2024",
+      "solution_explain": "A flag RED_FLAG_NETWORK_MASTER_2024 foi encontrada no arquivo red_flag.txt após acessar o servidor 192.168.1.150 com as credenciais admin:Server@1234."
+    }
+  ]
+}

@@ -1,0 +1,544 @@
+:root {
+    --bg: #0b0c0d;
+    --panel: #1a1b1e;
+    --text: #e4e4e4;
+    --accent: #36ff6b;
+    --secondary: #8a8a8a;
+    --danger: #ff3636;
+    --warning: #ffcc36;
+    --border: #333;
+    --success: #36ff6b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.app-header {
+    background-color: var(--panel);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-header h1 {
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+
+/* Barra de Progresso */
+.progress-container {
+    margin: 0 2rem;
+    flex: 1;
+    max-width: 300px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+    color: var(--secondary);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Grupos de Comandos no Help */
+.command-group {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: rgba(26, 27, 30, 0.5);
+    border-radius: 4px;
+    border-left: 3px solid var(--accent);
+}
+
+.command-item {
+    margin: 0.5rem 0;
+    padding: 0.25rem 0;
+    font-family: 'Courier New', monospace;
+}
+
+.command-group h4 {
+    color: var(--accent);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* Para mobile */
+@media (max-width: 768px) {
+    .user-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .progress-container {
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
+.btn-primary, .btn-secondary, .btn-danger {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--bg);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--bg);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-primary:hover, .btn-secondary:hover, .btn-danger:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.challenges-panel {
+    width: 350px;
+    background-color: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    overflow-y: auto;
+    transition: all 0.3s;
+}
+
+.challenges-panel h2 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.filter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.filter-controls select, .filter-controls input {
+    padding: 0.5rem;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.challenge-item {
+    padding: 0.75rem;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.challenge-item:hover {
+    border-color: var(--accent);
+}
+
+.challenge-item.active {
+    border-color: var(--accent);
+    background-color: rgba(54, 255, 107, 0.1);
+}
+
+.challenge-item.completed {
+    border-left: 4px solid var(--success);
+}
+
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.challenge-title {
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.challenge-level {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.level-easy {
+    background-color: var(--success);
+    color: var(--bg);
+}
+
+.level-medium {
+    background-color: var(--warning);
+    color: var(--bg);
+}
+
+.level-hard {
+    background-color: var(--danger);
+    color: white;
+}
+
+.challenge-description {
+    font-size: 0.85rem;
+    color: var(--secondary);
+}
+
+.terminal-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: var(--bg);
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.terminal-header h3 {
+    color: var(--accent);
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terminal {
+    flex: 1;
+    background-color: #000;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Animações do Terminal */
+.terminal-loading {
+    color: var(--accent);
+    font-style: italic;
+}
+
+.terminal-scanning {
+    color: var(--warning);
+    animation: pulse 1.5s infinite;
+}
+
+.terminal-accessing {
+    color: var(--success);
+    animation: blink 0.8s infinite;
+}
+
+.terminal-decrypting {
+    color: var(--accent);
+    animation: typewriter 2s steps(40, end);
+}
+
+.terminal-connecting {
+    color: var(--warning);
+    animation: connecting 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes connecting {
+    0% { content: "Conectando."; }
+    33% { content: "Conectando.."; }
+    66% { content: "Conectando..."; }
+    100% { content: "Conectando."; }
+}
+
+@keyframes scanning {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.scan-bar {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scanning 2s linear infinite;
+    margin: 0.5rem 0;
+}
+
+/* Efeito de digitação */
+.typing-effect {
+    overflow: hidden;
+    border-right: 2px solid var(--accent);
+    white-space: nowrap;
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--accent); }
+}
+
+.output {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.command-line {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.prompt {
+    color: var(--accent);
+    margin-right: 0.5rem;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+}
+
+#command-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    outline: none;
+}
+
+.file-listing {
+    margin: 0.5rem 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0;
+}
+
+.file-icon {
+    color: var(--accent);
+}
+
+.dir-icon {
+    color: var(--warning);
+}
+
+.js-sandbox {
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sandbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+#sandbox-code {
+    width: 100%;
+    height: 150px;
+    background-color: var(--bg);
+    color: var(--text);
+    border: none;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+}
+
+.broken-file-editor {
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+.fragments-container {
+    padding: 1rem;
+    background-color: var(--bg);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.fragment {
+    padding: 0.75rem;
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: move;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.fragment:hover {
+    border-color: var(--accent);
+}
+
+.fragment.dragging {
+    opacity: 0.5;
+}
+
+.editor-controls {
+    padding: 0.5rem 1rem;
+    background-color: var(--panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .challenges-panel {
+        width: 100%;
+        max-height: 300px;
+    }
+    
+    .terminal-container {
+        height: calc(100vh - 400px);
+    }
+}
+
+/* Animações */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.cursor {
+    animation: blink 1s infinite;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
