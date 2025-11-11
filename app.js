@@ -303,7 +303,10 @@ class DarkHackSimulator {
 
     // Auto-complete para comandos
     autoComplete(currentInput) {
-        const commands = ['ls', 'cd', 'pwd', 'open', 'close', 'cat', 'search', 'broken', 'hint', 'solve', 'history', 'help'];
+        const commands = ['ls', 'cd', 'pwd', 'open', 'close', 'cat', 'search', 'broken',
+            'hint', 'solve', 'history', 'clear', 'auth', 'api', 'help',
+            'scan', 'sniff', 'connect', 'remote_ls', 'remote_cd', 'remote_cat',
+            'cesar', 'hex', 'bin']; // ← Novos comandos
         const matches = commands.filter(cmd => cmd.startsWith(currentInput));
 
         if (matches.length === 1) {
@@ -311,6 +314,20 @@ class DarkHackSimulator {
         } else if (matches.length > 1) {
             this.addToTerminal(`Comandos possíveis: ${matches.join(', ')}`);
         }
+    }
+
+    // Verifica se o texto parece ser legível (para destacar soluções prováveis)
+    pareceTextoLegivel(texto) {
+        // Conta letras vs outros caracteres
+        const letras = texto.match(/[a-zA-ZÀ-ÿ]/g) || [];
+        const espacos = texto.match(/\s/g) || [];
+        const outros = texto.match(/[^a-zA-ZÀ-ÿ\s]/g) || [];
+
+        const totalCaracteres = texto.length;
+        const ratioLetras = letras.length / totalCaracteres;
+
+        // Textos com alta proporção de letras e espaços são considerados legíveis
+        return ratioLetras > 0.6 && espacos.length > 0;
     }
 
     // Executa um comando
@@ -382,6 +399,15 @@ class DarkHackSimulator {
                 break;
             case 'remote_cat':
                 this.cmdRemoteCat(args);
+                break;
+            case 'cesar':
+                this.cmdCesar(args);
+                break;
+            case 'hex':
+                this.cmdHex(args);
+                break;
+            case 'bin':
+                this.cmdBin(args);
                 break;
             default:
                 this.addToTerminal(`Comando não reconhecido: ${command}. Digite 'help' para ver os comandos disponíveis.`);
@@ -505,13 +531,16 @@ class DarkHackSimulator {
     }
 
     // Comando: search - busca por termo nos arquivos
-    cmdSearch(args) {
+    async cmdSearch(args) {
         if (args.length === 0) {
             this.addToTerminal('Uso: search <termo>');
             return;
         }
 
         const term = args.join(' ');
+
+        await this.showScanningAnimation(`Buscando por: "${term}" em todos os arquivos...`, 3000);
+
         const results = this.searchInFilesystem(term);
 
         if (results.length === 0) {
@@ -519,14 +548,14 @@ class DarkHackSimulator {
             return;
         }
 
-        this.addToTerminal(`Resultados da busca por "${term}":`);
+        this.addToTerminal(`✅ Resultados da busca por "${term}":`);
         results.forEach(result => {
             this.addToTerminal(`- ${result.path}: ${result.line}`);
         });
     }
 
     // Comando: broken - abre editor para arquivo quebrado
-    cmdBroken(args) {
+    async cmdBroken(args) {
         if (args.length === 0) {
             this.addToTerminal('Uso: broken <arquivo>');
             return;
@@ -545,6 +574,7 @@ class DarkHackSimulator {
             return;
         }
 
+        await this.showLoadingAnimation('Inicializando editor de fragmentos...', 2000);
         this.openBrokenFileEditor(args[0], node.content);
     }
 
@@ -567,7 +597,8 @@ class DarkHackSimulator {
     }
 
     // Comando: solve - tenta resolver o desafio
-    cmdSolve(args) {
+    // Comando: solve - com animação de verificação
+    async cmdSolve(args) {
         if (!this.currentChallenge) {
             this.addToTerminal('Nenhum desafio selecionado. Use a lista lateral para selecionar um desafio.');
             return;
@@ -579,13 +610,21 @@ class DarkHackSimulator {
         }
 
         const answer = args.join(' ');
+
+        // Exibe a animação de verificação
+        await this.showLoadingAnimation('Verificando resposta...', 2000);
+
+        // Verifica a resposta (sem await para não bloquear)
         const isCorrect = this.validateSolution(this.currentChallenge.id, answer);
 
         if (isCorrect) {
+            // Animação de sucesso
+            await this.showDecryptingAnimation('Processando solução...', 1500);
             this.addToTerminal('✅ Resposta correta! Desafio concluído.');
             this.markChallengeCompleted(this.currentChallenge.id);
             this.renderChallengesList();
         } else {
+            // Feedback imediato para erro
             this.addToTerminal('❌ Resposta incorreta. Tente novamente ou use "hint" para obter uma dica.');
         }
     }
@@ -637,17 +676,19 @@ class DarkHackSimulator {
     }
 
     // Comando: scan - executa varredura de rede
-    cmdScan(args) {
+    async cmdScan(args) {
         if (this.currentChallenge && this.currentChallenge.id === 'network_interception') {
+            await this.showScanningAnimation('Varrendo rede local...', 4000);
+
             const scanResults = {
-                '192.168.1.1': 'Gateway/Router',
-                '192.168.1.50': 'Servidor Web',
-                '192.168.1.100': 'Workstation - user: john_doe',
-                '192.168.1.150': 'File Server - uma vulnerabilidade encontrada',
-                '192.168.1.200': 'Database Server'
+                '192.168.1.1': 'gateway/router',
+                '192.168.1.50': 'servidor Web',
+                '192.168.1.100': 'workstation - User: john_doe',
+                '192.168.1.150': 'file Server - uma vulnerabilidade encontrada',
+                '192.168.1.200': 'database server'
             };
 
-            this.addToTerminal(' Iniciando varredura de rede...');
+            this.addToTerminal('✅ Varredura de rede concluída:');
             this.addToTerminal('Hosts encontrados:');
             Object.keys(scanResults).forEach(ip => {
                 this.addToTerminal(`  ${ip} - ${scanResults[ip]}`);
@@ -659,7 +700,7 @@ class DarkHackSimulator {
     }
 
     // Comando: sniff <IP> - intercepta tráfego
-    cmdSniff(args) {
+    async cmdSniff(args) {
         if (args.length === 0) {
             this.addToTerminal('Uso: sniff <IP> - Intercepta tráfego do host especificado');
             return;
@@ -668,8 +709,10 @@ class DarkHackSimulator {
         const targetIP = args[0];
 
         if (this.currentChallenge && this.currentChallenge.id === 'network_interception') {
+            await this.showLoadingAnimation(`Iniciando interceptação do tráfego de ${targetIP}...`, 5000);
+
             if (targetIP === '192.168.1.150') {
-                this.addToTerminal(` Interceptando tráfego de ${targetIP}...`);
+                this.addToTerminal(`✅ Interceptação de ${targetIP} concluída:`);
                 this.addToTerminal(' Pacotes capturados:');
                 this.addToTerminal('  - FTP Login: user=admin password=Server@1234');
                 this.addToTerminal('  - HTTP: GET /confidential/data.zip');
@@ -677,7 +720,7 @@ class DarkHackSimulator {
                 this.addToTerminal('  - SSH: Connection established port 22');
                 this.addToTerminal('\n Credenciais FTP encontradas! Use: connect 192.168.1.150');
             } else {
-                this.addToTerminal(` Nenhum tráfego interessante encontrado para ${targetIP}`);
+                this.addToTerminal(`❌ Nenhum tráfego relevante encontrado para ${targetIP}`);
             }
         } else {
             this.addToTerminal('Sniffer de pacotes não disponível neste desafio.');
@@ -685,7 +728,7 @@ class DarkHackSimulator {
     }
 
     // Comando: connect <IP> - conecta ao servidor
-    cmdConnect(args) {
+    async cmdConnect(args) {
         if (args.length === 0) {
             this.addToTerminal('Uso: connect <IP> - Conecta ao servidor especificado');
             return;
@@ -694,17 +737,24 @@ class DarkHackSimulator {
         const targetIP = args[0];
 
         if (this.currentChallenge && this.currentChallenge.id === 'network_interception') {
-            if (targetIP === '192.168.1.150') {
-                this.addToTerminal(` Conectando ao servidor ${targetIP}...`);
-                this.addToTerminal(' Conexão FTP estabelecida com credenciais: admin:Server@1234');
-                this.addToTerminal(' Sistema de arquivos remoto acessível');
-                this.addToTerminal('\n ');
+            await this.showConnectingAnimation(`Estabelecendo conexão com ${targetIP}`, 6000);
 
-                // Marca que o servidor está acessível
+            if (targetIP === '192.168.1.150') {
+                this.addToTerminal(` Conexão FTP estabelecida com ${targetIP}`);
+                this.addToTerminal(' Autenticando com credenciais: admin:Server@1234');
+                this.addToTerminal(' Sistema de arquivos remoto acessível');
+                this.addToTerminal('\n Comandos disponíveis:');
+                this.addToTerminal('  remote_ls          - Lista arquivos remotos');
+                this.addToTerminal('  remote_cd <pasta>  - Navega no servidor');
+                this.addToTerminal('  remote_cat <arquivo> - Lê arquivos remotos');
+
+                // Configura estado do servidor remoto
                 this.remoteServerConnected = true;
                 this.remoteServerIP = targetIP;
+                this.remoteCurrentPath = '/';
             } else {
-                this.addToTerminal(` Falha na conexão com ${targetIP}`);
+                this.addToTerminal(`❌ Falha na conexão com ${targetIP}`);
+                this.addToTerminal(' Use: scan para encontrar servidores vulneráveis');
             }
         } else {
             this.addToTerminal('Conexão remota não disponível neste desafio.');
@@ -745,52 +795,74 @@ class DarkHackSimulator {
     }
 
     // Comando: remote_cd <pasta> - navega no servidor remoto
-    cmdRemoteCd(args) {
-        if (args.length === 0) {
-            this.addToTerminal('Uso: remote_cd <pasta> - Navega no servidor remoto');
+    async cmdRemoteLs(args) {
+        if (!this.remoteServerConnected) {
+            this.addToTerminal('❌ Nenhum servidor remoto conectado. Use: connect <IP> primeiro');
             return;
         }
 
-        const folder = args[0];
-        const validPaths = ['home', 'etc', 'home/admin', 'home/admin/documents', 'home/admin/downloads', 'home/www', '/'];
+        await this.showLoadingAnimation('Acessando sistema de arquivos remoto...', 3000);
 
-        if (validPaths.includes(folder)) {
-            this.addToTerminal(`📁 Mudando para: ${folder}`);
-            this.addToTerminal('');
-        } else {
-            this.addToTerminal(`❌ Diretório não encontrado: ${folder}`);
+        const path = args[0] || this.remoteCurrentPath;
+
+        this.addToTerminal(`📁 Conteúdo de ${path}:`);
+
+        if (path === '/' || this.remoteCurrentPath === '/') {
+            this.addToTerminal('  home/    - Diretórios de usuários');
+            this.addToTerminal('  etc/     - Arquivos de configuração');
+        } else if (path === '/home' || this.remoteCurrentPath === '/home') {
+            this.addToTerminal('  admin/   - Diretório do administrador');
+            this.addToTerminal('  www/     - Arquivos do servidor web');
+        } else if (path === '/home/admin' || this.remoteCurrentPath === '/home/admin') {
+            this.addToTerminal('  documents/ - Documentos pessoais');
+            this.addToTerminal('  downloads/ - Downloads');
+        } else if (path === '/home/admin/documents' || this.remoteCurrentPath === '/home/admin/documents') {
+            this.addToTerminal('  passwords.txt       - Senhas e credenciais');
+            this.addToTerminal('  financial_data.xlsx - Dados financeiros');
+        } else if (path === '/etc' || this.remoteCurrentPath === '/etc') {
+            this.addToTerminal('  red_flag.txt - ARQUIVO DA FLAG');
+            this.addToTerminal('  shadow.bak   - Backup de senhas');
         }
+
+        this.addToTerminal('\n Use: remote_cd <pasta> para navegar ou remote_cat <arquivo> para ler');
     }
 
     // Comando: remote_cat <arquivo> - lê arquivo do servidor remoto
-    cmdRemoteCat(args) {
+    async cmdRemoteCat(args) {
+        if (!this.remoteServerConnected) {
+            this.addToTerminal('❌ Nenhum servidor remoto conectado. Use: connect <IP> primeiro');
+            return;
+        }
+
         if (args.length === 0) {
             this.addToTerminal('Uso: remote_cat <arquivo> - Lê arquivo do servidor remoto');
+            this.addToTerminal(' Use remote_ls primeiro para ver os arquivos disponíveis');
             return;
         }
 
         const filename = args[0];
-        const serverFS = window.networkServers[this.remoteServerIP];
 
-        // Simulação de acesso a arquivos específicos
-        const fileContents = {
-            'passwords.txt': 'Email: john.doe@company.com\nPassword: MySecurePass123!\nBank: 001 | Account: 12345-6\nCredit Card: 4111-1111-1111-1111 | Exp: 12/25',
-            'red_flag.txt': 'PARABÉNS! Você completou a interceptação!\n\nFLAG: RED_FLAG_NETWORK_MASTER_2024\n\nEsta flag demonstra sua habilidade em:\n- Varredura de rede\n- Interceptação de tráfego\n- Exploração de vulnerabilidades\n- Recuperação de dados sensíveis',
-            'financial_data.xlsx': 'Dados financeiros da empresa:\n- Saldo total: R$ 1.500.000,00\n- Transações recentes...\n- Contas a pagar...',
-            'shadow.bak': 'root:$6$rounds=5000$abc123$HASHED_PASSWORD_HERE\nadmin:$6$rounds=5000$def456$ANOTHER_HASH_HERE'
-        };
+        await this.showLoadingAnimation(`Transferindo arquivo: ${filename}...`, 2500);
 
-        if (fileContents[filename]) {
-            this.addToTerminal(`Conteúdo de ${filename}:`);
-            this.addToTerminal('---');
-            this.addToTerminal(fileContents[filename]);
-            this.addToTerminal('---');
+        // Verifica se o arquivo está acessível no diretório atual
+        const accessibleFiles = this.getAccessibleFiles();
 
-            if (filename === 'red_flag.txt') {
-                this.addToTerminal('\n FLAG ENCONTRADA!');
-            }
-        } else {
+        if (!accessibleFiles[filename]) {
             this.addToTerminal(`❌ Arquivo não encontrado: ${filename}`);
+            this.addToTerminal(` Arquivos disponíveis em ${this.remoteCurrentPath}:`);
+            Object.keys(accessibleFiles).forEach(file => {
+                this.addToTerminal(`  - ${file}`);
+            });
+            return;
+        }
+
+        this.addToTerminal(`Conteúdo de ${filename}:`);
+        this.addToTerminal('---');
+        this.addToTerminal(accessibleFiles[filename]);
+        this.addToTerminal('---');
+
+        if (filename === 'red_flag.txt') {
+            this.addToTerminal('\n FLAG ENCONTRADA! Use: solve RED_FLAG_NETWORK_MASTER_2024');
         }
     }
 
@@ -819,6 +891,160 @@ class DarkHackSimulator {
             this.addToTerminal(response);
         } else {
             this.addToTerminal('API simulada não disponível neste desafio.');
+        }
+    }
+
+    async cmdCesar(args) {
+        if (args.length === 0) {
+            this.addToTerminal('Uso: cesar <texto> [chave] - Decodifica cifra de César');
+            this.addToTerminal('Exemplo: cesar "KROD" 3 → decodifica com chave 3');
+            this.addToTerminal('         cesar "KROD"    → testa todas as chaves 1-25');
+            return;
+        }
+
+        // Junta todos os argumentos para permitir espaços no texto
+        let textoCompleto = args.join(' ');
+        let texto, chave;
+
+        // Verifica se o texto está entre aspas
+        const match = textoCompleto.match(/^"([^"]+)"(?:\s+(\d+))?$/);
+        if (match) {
+            texto = match[1];
+            chave = match[2] ? parseInt(match[2]) : null;
+        } else {
+            // Se não tem aspas, usa o primeiro argumento como texto e o segundo como chave
+            texto = args[0];
+            chave = args[1] ? parseInt(args[1]) : null;
+        }
+
+        await this.showDecryptingAnimation('Iniciando análise da cifra de César...', 2000);
+
+        if (chave && !isNaN(chave)) {
+            await this.showLoadingAnimation(`Aplicando chave ${chave}...`, 1500);
+
+            const resultado = this.decodificarCesar(texto, chave);
+            this.addToTerminal(' CIFRA DE CÉSAR - RESULTADO');
+            this.addToTerminal('---');
+            this.addToTerminal(`Texto cifrado: ${texto}`);
+            this.addToTerminal(`Chave aplicada: ${chave}`);
+            this.addToTerminal(`Texto decifrado: ${resultado}`);
+            this.addToTerminal('---');
+        } else {
+            await this.showScanningAnimation('Testando todas as chaves possíveis (1-25)...', 3000);
+
+            this.addToTerminal(' CIFRA DE CÉSAR - ANÁLISE COMPLETA');
+            this.addToTerminal(`Texto analisado: "${texto}"`);
+            this.addToTerminal('---');
+
+            let resultadosValidos = [];
+
+            for (let chave = 1; chave <= 25; chave++) {
+                const resultado = this.decodificarCesar(texto, chave);
+                const linha = `Chave ${chave.toString().padStart(2)}: ${resultado}`;
+
+                // Destaca resultados que parecem ser texto legível
+                if (this.pareceTextoLegivel(resultado)) {
+                    this.addToTerminal(` ${linha} ← POSSÍVEL SOLUÇÃO`);
+                    resultadosValidos.push({ chave, texto: resultado });
+                } else {
+                    this.addToTerminal(`   ${linha}`);
+                }
+            }
+
+            this.addToTerminal('---');
+
+            if (resultadosValidos.length > 0) {
+                this.addToTerminal(' Possíveis soluções identificadas:');
+                resultadosValidos.forEach((item, index) => {
+                    this.addToTerminal(`   ${index + 1}. Chave ${item.chave}: "${item.texto}"`);
+                });
+            }
+
+            this.addToTerminal(' Use: cesar "<texto>" <chave> para decodificar com chave específica');
+        }
+    }
+
+    async cmdHex(args) {
+        if (args.length === 0) {
+            this.addToTerminal('Uso: hex <texto_hex> - Decodifica hexadecimal para texto');
+            this.addToTerminal('Exemplo: hex "4861636b6572" → "Hacker"');
+            this.addToTerminal('         hex "46 6C 61 67" → "Flag" (com espaços)');
+            return;
+        }
+
+        let hexString = args.join(' ');
+
+        await this.showDecryptingAnimation('Iniciando decodificação hexadecimal...', 2000);
+        await this.showLoadingAnimation('Convertendo bytes hexadecimais...', 1500);
+
+        try {
+            const resultado = this.decodificarHex(hexString);
+
+            this.addToTerminal(' DECODIFICAÇÃO HEXADECIMAL');
+            this.addToTerminal('---');
+            this.addToTerminal(`Hexadecimal: ${hexString}`);
+            this.addToTerminal(`Bytes encontrados: ${hexString.replace(/\s/g, '').length / 2}`);
+            this.addToTerminal(`Texto decodificado: ${resultado}`);
+            this.addToTerminal('---');
+
+            // Mostra a conversão passo a passo
+            if (hexString.replace(/\s/g, '').length <= 30) {
+                this.addToTerminal(' CONVERSÃO DETALHADA:');
+                const hexClean = hexString.replace(/\s/g, '');
+                for (let i = 0; i < hexClean.length; i += 2) {
+                    const hexByte = hexClean.substr(i, 2);
+                    const decimal = parseInt(hexByte, 16);
+                    const char = String.fromCharCode(decimal);
+                    this.addToTerminal(`  ${hexByte} → ${decimal.toString().padStart(3)} → '${char}'`);
+                }
+            }
+
+        } catch (error) {
+            this.addToTerminal(`❌ Erro na decodificação: ${error.message}`);
+            this.addToTerminal(' Certifique-se de que é um hexadecimal válido');
+        }
+    }
+
+    async cmdBin(args) {
+        if (args.length === 0) {
+            this.addToTerminal('Uso: bin <texto_bin> - Decodifica binário para texto');
+            this.addToTerminal('Exemplo: bin "01001000 01100001 01100011 01101011 01100101 01110010" → "Hacker"');
+            this.addToTerminal('         bin "01000110011011000110000101100111" → "Flag" (sem espaços)');
+            return;
+        }
+
+        let binString = args.join(' ');
+
+        await this.showDecryptingAnimation('Iniciando decodificação binária...', 2000);
+        await this.showLoadingAnimation('Processando sequência de bits...', 1500);
+
+        try {
+            const resultado = this.decodificarBinario(binString);
+
+            this.addToTerminal(' DECODIFICAÇÃO BINÁRIA');
+            this.addToTerminal('---');
+            this.addToTerminal(`Binário: ${binString}`);
+            this.addToTerminal(`Bits processados: ${binString.replace(/\s/g, '').length}`);
+            this.addToTerminal(`Bytes decodificados: ${binString.replace(/\s/g, '').length / 8}`);
+            this.addToTerminal(`Texto decodificado: ${resultado}`);
+            this.addToTerminal('---');
+
+            // Mostra a conversão passo a passo para textos curtos
+            const binClean = binString.replace(/\s/g, '');
+            if (binClean.length <= 64) {
+                this.addToTerminal(' CONVERSÃO DETALHADA:');
+                for (let i = 0; i < binClean.length; i += 8) {
+                    const binByte = binClean.substr(i, 8);
+                    const decimal = parseInt(binByte, 2);
+                    const hex = decimal.toString(16).padStart(2, '0').toUpperCase();
+                    const char = decimal >= 32 && decimal <= 126 ? String.fromCharCode(decimal) : '�';
+                    this.addToTerminal(`  ${binByte} → ${hex} → ${decimal.toString().padStart(3)} → '${char}'`);
+                }
+            }
+
+        } catch (error) {
+            this.addToTerminal(`❌ Erro na decodificação: ${error.message}`);
+            this.addToTerminal(' Certifique-se de que são apenas 0s e 1s em grupos de 8 bits');
         }
     }
 
@@ -873,6 +1099,106 @@ class DarkHackSimulator {
     `.trim();
 
         this.addToTerminal(helpText, true);
+    }
+
+    // Funções de animação
+    // Função de animação de loading CORRIGIDA
+    showLoadingAnimation(message, duration = 3000) {
+        return new Promise((resolve) => {
+            const output = document.querySelector('.terminal .output');
+
+            const loadingLine = document.createElement('div');
+            loadingLine.className = 'command-line terminal-loading';
+            loadingLine.innerHTML = ` ${message}`;
+            output.appendChild(loadingLine);
+
+            let scanBar = null;
+            // Barra de progresso para animações mais longas
+            if (duration > 2000) {
+                scanBar = document.createElement('div');
+                scanBar.className = 'scan-bar';
+                output.appendChild(scanBar);
+            }
+
+            output.scrollTop = output.scrollHeight;
+
+            setTimeout(() => {
+                // Remove os elementos de animação
+                if (loadingLine.parentNode) {
+                    loadingLine.remove();
+                }
+                if (scanBar && scanBar.parentNode) {
+                    scanBar.remove();
+                }
+                resolve();
+            }, duration);
+        });
+    }
+
+    showScanningAnimation(message, duration = 4000) {
+        return new Promise((resolve) => {
+            const scanLine = document.createElement('div');
+            scanLine.className = 'command-line terminal-scanning';
+            scanLine.innerHTML = ` ${message}`;
+
+            const output = document.querySelector('.terminal .output');
+            output.appendChild(scanLine);
+            output.scrollTop = output.scrollHeight;
+
+            const scanBar = document.createElement('div');
+            scanBar.className = 'scan-bar';
+            output.appendChild(scanBar);
+
+            setTimeout(() => {
+                scanBar.remove();
+                scanLine.remove();
+                resolve();
+            }, duration);
+        });
+    }
+
+    showConnectingAnimation(message, duration = 5000) {
+        return new Promise((resolve) => {
+            const connectLine = document.createElement('div');
+            connectLine.className = 'command-line terminal-connecting';
+            connectLine.innerHTML = ` ${message}`;
+
+            const output = document.querySelector('.terminal .output');
+            output.appendChild(connectLine);
+            output.scrollTop = output.scrollHeight;
+
+            // Animação de pontos flutuantes
+            let dots = 0;
+            const dotInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                connectLine.innerHTML = ` ${message}${'.'.repeat(dots)}`;
+            }, 500);
+
+            setTimeout(() => {
+                clearInterval(dotInterval);
+                connectLine.remove();
+                resolve();
+            }, duration);
+        });
+    }
+
+    showDecryptingAnimation(message, duration = 3500) {
+        return new Promise((resolve) => {
+            const output = document.querySelector('.terminal .output');
+
+            const decryptLine = document.createElement('div');
+            decryptLine.className = 'command-line terminal-decrypting';
+            decryptLine.innerHTML = ` ${message}`;
+            output.appendChild(decryptLine);
+            output.scrollTop = output.scrollHeight;
+
+            setTimeout(() => {
+                if (decryptLine.parentNode) {
+                    decryptLine.remove();
+                }
+                resolve();
+            }, duration);
+        });
     }
 
     // Valida uma solução para um desafio
@@ -988,6 +1314,76 @@ class DarkHackSimulator {
         return results;
     }
 
+    // Decodificador de Cifra de César
+    decodificarCesar(texto, chave) {
+        return texto.split('').map(char => {
+            if (char >= 'A' && char <= 'Z') {
+                // Letra maiúscula
+                return String.fromCharCode(((char.charCodeAt(0) - 65 - chave + 26) % 26) + 65);
+            } else if (char >= 'a' && char <= 'z') {
+                // Letra minúscula
+                return String.fromCharCode(((char.charCodeAt(0) - 97 - chave + 26) % 26) + 97);
+            } else if (char >= '0' && char <= '9') {
+                // Números (opcional)
+                return String.fromCharCode(((char.charCodeAt(0) - 48 - chave + 10) % 10) + 48);
+            }
+            // Mantém outros caracteres
+            return char;
+        }).join('');
+    }
+
+    // Decodificador de Hexadecimal
+    decodificarHex(hexString) {
+        // Remove espaços e verifica se é hex válido
+        const hexClean = hexString.replace(/\s/g, '');
+
+        if (!/^[0-9A-Fa-f]+$/.test(hexClean)) {
+            throw new Error('String hexadecimal inválida');
+        }
+
+        if (hexClean.length % 2 !== 0) {
+            throw new Error('Hexadecimal deve ter número par de caracteres');
+        }
+
+        let resultado = '';
+        for (let i = 0; i < hexClean.length; i += 2) {
+            const hexByte = hexClean.substr(i, 2);
+            const decimal = parseInt(hexByte, 16);
+            resultado += String.fromCharCode(decimal);
+        }
+
+        return resultado;
+    }
+
+    // Decodificador de Binário
+    decodificarBinario(binString) {
+        // Remove espaços e verifica se é binário válido
+        const binClean = binString.replace(/\s/g, '');
+
+        if (!/^[01]+$/.test(binClean)) {
+            throw new Error('String binária inválida - use apenas 0 e 1');
+        }
+
+        if (binClean.length % 8 !== 0) {
+            throw new Error('Binário deve ter múltiplos de 8 bits');
+        }
+
+        let resultado = '';
+        for (let i = 0; i < binClean.length; i += 8) {
+            const binByte = binClean.substr(i, 8);
+            const decimal = parseInt(binByte, 2);
+
+            // Verifica se é caractere imprimível ASCII
+            if (decimal >= 32 && decimal <= 126) {
+                resultado += String.fromCharCode(decimal);
+            } else {
+                resultado += `\\x${decimal.toString(16).padStart(2, '0')}`;
+            }
+        }
+
+        return resultado;
+    }
+
     // Abre o editor de arquivos quebrados
     openBrokenFileEditor(filename, content) {
         document.getElementById('broken-file-name').textContent = filename;
@@ -1100,46 +1496,17 @@ class DarkHackSimulator {
     }
 
     // Executa código no sandbox JS
-    runSandboxCode() {
+    // Executa código no sandbox com animação
+    async runSandboxCode() {
         const code = document.getElementById('sandbox-code').value;
+        const isCLanguage = code.trim().startsWith('#include') || code.includes('int main') || code.includes('printf(');
 
-        try {
-            // Captura o console.log
-            let consoleOutput = [];
-            const originalConsoleLog = console.log;
-            console.log = (...args) => {
-                consoleOutput.push(args.map(arg =>
-                    typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-                ).join(' '));
-            };
+        await this.showLoadingAnimation('Compilando e executando código...', 2000);
 
-            this.addToTerminal(`> ${code}`);
-
-            // Executa o código
-            const result = new Function(code)();
-
-            // Restaura console.log original
-            console.log = originalConsoleLog;
-
-            // Exibe outputs do console.log
-            if (consoleOutput.length > 0) {
-                consoleOutput.forEach(output => {
-                    this.addToTerminal(`[console] ${output}`);
-                });
-            }
-
-            // Exibe o resultado da função (se houver)
-            if (result !== undefined) {
-                this.addToTerminal(`Resultado: ${result}`);
-            } else if (consoleOutput.length === 0) {
-                this.addToTerminal('Código executado (sem retorno)');
-            }
-
-        } catch (error) {
-            // Restaura console.log em caso de erro
-            console.log = originalConsoleLog;
-            this.addToTerminal(`> ${code}`);
-            this.addToTerminal(`Erro: ${error.message}`);
+        if (isCLanguage) {
+            this.runCSandbox(code);
+        } else {
+            this.runJSSandbox(code);
         }
     }
 
@@ -1198,4 +1565,3 @@ class DarkHackSimulator {
 document.addEventListener('DOMContentLoaded', () => {
     window.hackSimulator = new DarkHackSimulator();
 });
-
